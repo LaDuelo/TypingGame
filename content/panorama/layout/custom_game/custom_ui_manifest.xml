@@ -1,0 +1,9 @@
+<root>
+    <styles>
+    </styles>
+    <script>
+    </script>
+    <Panel>
+        <CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/hud_box.xml" />
+    </Panel>
+</root>

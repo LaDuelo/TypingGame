@@ -60,3 +60,15 @@ function TypingGame:OnThink()
 	end
 	return 1
 end
+
+function onInputSubmit(eventSourceIndex, args)
+	local text
+	for key,value in pairs(args['text']) do
+		text = key
+	end
+
+	-- we have the entered text here
+	Say(PlayerResource:GetPlayer(args['playerId']), text, false)
+end
+
+CustomGameEventManager:RegisterListener("input_submit", onInputSubmit);
