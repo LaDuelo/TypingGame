@@ -56,8 +56,14 @@ end
 function TypingGame:GetCreatureById(creatureId, playerId)
 	local spawnLocation = TypingGame:GetSpawnLocation(playerId)
 
+    Msg(creatureId)
+    local createList = {
+        unit1 = 'npc_dota_hero_nevermore',
+        unit2 = 'npc_dota_hero_lina'
+    }
 	-- todo: id => creature logic
-	return CreateUnitByName("npc_dota_hero_nevermore", spawnLocation, true, nil, nil, TypingGame:GetTeam(playerId))
+
+	return CreateUnitByName(createList[creatureId], spawnLocation, true, nil, nil, TypingGame:GetTeam(playerId))
 end
 
 
@@ -108,7 +114,7 @@ end
 
 local function onMakeUnitClick(eventSourceIndex, args)
 	local playerId = args["playerId"]
-	local unitId = args["unit"]
+	local unitId = "unit" .. args["unit"]
 
     -- todo: money shit
 

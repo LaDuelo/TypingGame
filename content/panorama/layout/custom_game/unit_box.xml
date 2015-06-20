@@ -13,9 +13,11 @@
                     <Image src="file://{images}/custom_game/le.png"
                            scaling="stretch-to-fit-preserve-aspect" />
                 </Button>
-                <Panel class="box">
-
-                </Panel>
+                <Button class="box"
+                        onactivate="makeUnit(2)">
+                    <Image src="file://{images}/custom_Game/lina.png"
+                           scaling="stretch-to-fit-preserv-easpect" />
+                </Button>
                 <Panel class="box">
 
                 </Panel>

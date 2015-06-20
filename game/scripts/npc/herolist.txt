@@ -1,4 +1,5 @@
 "CustomHeroList"
 {
 	"npc_dota_hero_nevermore"		"1"
+	"npc_dota_hero_lina"			"1"
 }
