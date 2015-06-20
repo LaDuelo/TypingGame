@@ -1,6 +1,9 @@
 .rightContainer {
-    background-color: red;
+    background-color: #212226;
     position: 75% 40% 1px;
+    border-radius: 10px;
+    padding: 5px;
+    border: 2px solid #111111;
 }
 .table {
     flow-children: down;
@@ -9,8 +12,10 @@
     flow-children: right;
 }
 .box {
-     width: 50px;
-     background-color: white;
-     height: 50px;
-     margin: 5px;
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    border: 1px solid #111111;
+    border-radius: 10px;
+    box-shadow: inset 5px 5px 5px 5px rgba(0,0,0,255);
 }
