@@ -25,13 +25,20 @@ function TypingGame:OnPlayerUseAbility(args)
 	DeepPrintTable(args)
 	local plyID = args["PlayerID"]
 	local plyTeam = PlayerResource:GetTeam(plyID)
-	local hero = PlayerResource:GetSelectedHeroEntity(plyID)
 	if plyTeam == DOTA_TEAM_GOODGUYS then
 		local spawner = Entities:FindByClassname(nil, "npc_dota_spawner_good_mid")
-		CreateUnitByName('npc_dota_hero_nevermore', spawner:GetAbsOrigin(), true, nil, nil, DOTA_TEAM_GOODGUYS)
+		local creature = CreateUnitByName("npc_dota_hero_nevermore", spawner:GetAbsOrigin() + RandomVector( RandomFloat( 0, 200 ) ), true, nil, nil, DOTA_TEAM_GOODGUYS)
+		local direAncient = Entities:FindByName(nil, "dota_badguys_fort")
+		local vecDireAncient = direAncient:GetAbsOrigin()
+		creature:SetInitialGoalEntity(direAncient)
+		creature:SetMustReachEachGoalEntity(true)
 	else
 		local spawner = Entities:FindByClassname(nil, "npc_dota_spawner_bad_mid")
-		CreateUnitByName('npc_dota_hero_nevermore', spawner:GetAbsOrigin(), true, nil, nil, DOTA_TEAM_BADGUYS)
+		local creature = CreateUnitByName("npc_dota_hero_nevermore", spawner:GetAbsOrigin() + RandomVector( RandomFloat( 0, 200 ) ), true, nil, nil, DOTA_TEAM_BADGUYS)
+		local radiantAncient = Entities:FindByName(nil, "dota_goodguys_fort")
+		local vecRadiantAncient = radiantAncient:GetAbsOrigin()
+		creature:SetInitialGoalEntity(radiantAncient)
+		creature:SetMustReachEachGoalEntity(true)
 	end
 end
 
