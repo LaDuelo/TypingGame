@@ -20,27 +20,55 @@ function Activate()
 	GameRules.AddonTemplate:InitGameMode()
 end
 
-function TypingGame:OnPlayerUseAbility(args)
-	print("OnPlayerUseAbility")
-	DeepPrintTable(args)
-	local plyID = args["PlayerID"]
-	local plyTeam = PlayerResource:GetTeam(plyID)
-	if plyTeam == DOTA_TEAM_GOODGUYS then
-		local spawner = Entities:FindByClassname(nil, "npc_dota_spawner_good_mid")
-		local creature = CreateUnitByName("npc_dota_hero_nevermore", spawner:GetAbsOrigin() + RandomVector( RandomFloat( 0, 200 ) ), true, nil, nil, DOTA_TEAM_GOODGUYS)
-		local direAncient = Entities:FindByName(nil, "dota_badguys_fort")
-		local vecDireAncient = direAncient:GetAbsOrigin()
-		creature:SetInitialGoalEntity(direAncient)
-		creature:SetMustReachEachGoalEntity(true)
+function TypingGame:IsPlayerRadiant(playerId)
+	return PlayerResource:GetTeam(playerId) == DOTA_TEAM_GOODGUYS
+end
+
+-- returns the position of the enemy ancient
+function TypingGame:GetTargetLocation(playerId)
+	if TypingGame:IsPlayerRadiant(playerId) then
+		return Entities:FindByName(nil, "dota_badguys_fort")
 	else
-		local spawner = Entities:FindByClassname(nil, "npc_dota_spawner_bad_mid")
-		local creature = CreateUnitByName("npc_dota_hero_nevermore", spawner:GetAbsOrigin() + RandomVector( RandomFloat( 0, 200 ) ), true, nil, nil, DOTA_TEAM_BADGUYS)
-		local radiantAncient = Entities:FindByName(nil, "dota_goodguys_fort")
-		local vecRadiantAncient = radiantAncient:GetAbsOrigin()
-		creature:SetInitialGoalEntity(radiantAncient)
-		creature:SetMustReachEachGoalEntity(true)
+		return Entities:FindByName(nil, "dota_goodguys_fort")
 	end
 end
+
+-- returns the spawner of the players team
+function TypingGame:GetSpawnLocation(playerId)
+	local spawner
+	if TypingGame:IsPlayerRadiant(playerId) then
+		spawner = Entities:FindByClassname(nil, "npc_dota_spawner_good_mid")
+	else
+		spawner = Entities:FindByClassname(nil, "npc_dota_spawner_bad_mid")
+	end
+
+	return spawner:GetAbsOrigin() + RandomVector( RandomFloat( 0, 200 ) )
+end
+
+function TypingGame:GetTeam(playerId)
+	if TypingGame:IsPlayerRadiant(playerId) then
+		return DOTA_TEAM_GOODGUYS
+	else
+		return DOTA_TEAM_BADGUYS
+    end
+end
+
+function TypingGame:GetCreatureById(creatureId, playerId)
+	local spawnLocation = TypingGame:GetSpawnLocation(playerId)
+
+	-- todo: id => creature logic
+	return CreateUnitByName("npc_dota_hero_nevermore", spawnLocation, true, nil, nil, TypingGame:GetTeam(playerId))
+end
+
+
+function TypingGame:SpawnUnit(playerId, creatureId)
+	local targetLocation = TypingGame:GetTargetLocation(playerId)
+	local creature = TypingGame:GetCreatureById(creatureId, playerId);
+
+	creature:SetInitialGoalEntity(targetLocation)
+	creature:SetMustReachEachGoalEntity(true)
+end
+
 
 function TypingGame:OnPlayerPickHero(args)
 	print("OnPlayerPickHero")
@@ -50,10 +78,9 @@ end
 function TypingGame:InitGameMode()
 	print( "Typing Game addon is loaded." )
 	GameRules:GetGameModeEntity():SetThink( "OnThink", self, "GlobalThink", 2 )
-	
+
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(false)
-	
-	ListenToGameEvent('dota_player_used_ability', Dynamic_Wrap(TypingGame, 'OnPlayerUseAbility'), self)
+
 	ListenToGameEvent('dota_player_pick_hero', Dynamic_Wrap(TypingGame, 'OnPlayerPickHero'), self)
 end
 
@@ -68,7 +95,7 @@ function TypingGame:OnThink()
 	return 1
 end
 
-function onInputSubmit(eventSourceIndex, args)
+local function onInputSubmit(eventSourceIndex, args)
 	local text
 	for key,value in pairs(args['text']) do
 		text = key
@@ -78,18 +105,16 @@ function onInputSubmit(eventSourceIndex, args)
 	Say(PlayerResource:GetPlayer(args['playerId']), text, false)
 end
 
-CustomGameEventManager:RegisterListener("input_submit", onInputSubmit);
 
-function onMakeUnitClick(eventSourceIndex, args)
-	local plyID = args["playerId"]
-	local plyTeam = PlayerResource:GetTeam(plyID)
-	if plyTeam == DOTA_TEAM_GOODGUYS then
-		local spawner = Entities:FindByClassname(nil, "npc_dota_spawner_good_mid")
-		CreateUnitByName('npc_dota_hero_nevermore', spawner:GetAbsOrigin(), true, nil, nil, DOTA_TEAM_GOODGUYS)
-	else
-		local spawner = Entities:FindByClassname(nil, "npc_dota_spawner_bad_mid")
-		CreateUnitByName('npc_dota_hero_nevermore', spawner:GetAbsOrigin(), true, nil, nil, DOTA_TEAM_BADGUYS)
-	end
+local function onMakeUnitClick(eventSourceIndex, args)
+	local playerId = args["playerId"]
+	local unitId = args["unit"]
+
+    -- todo: money shit
+
+	TypingGame:SpawnUnit(playerId,unitId);
 end
 
+CustomGameEventManager:RegisterListener("input_submit", onInputSubmit)
 CustomGameEventManager:RegisterListener("make_unit_click", onMakeUnitClick)
+
