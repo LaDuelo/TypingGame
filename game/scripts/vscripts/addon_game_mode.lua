@@ -72,3 +72,17 @@ function onInputSubmit(eventSourceIndex, args)
 end
 
 CustomGameEventManager:RegisterListener("input_submit", onInputSubmit);
+
+function onMakeUnitClick(eventSourceIndex, args)
+	local plyID = args["playerId"]
+	local plyTeam = PlayerResource:GetTeam(plyID)
+	if plyTeam == DOTA_TEAM_GOODGUYS then
+		local spawner = Entities:FindByClassname(nil, "npc_dota_spawner_good_mid")
+		CreateUnitByName('npc_dota_hero_nevermore', spawner:GetAbsOrigin(), true, nil, nil, DOTA_TEAM_GOODGUYS)
+	else
+		local spawner = Entities:FindByClassname(nil, "npc_dota_spawner_bad_mid")
+		CreateUnitByName('npc_dota_hero_nevermore', spawner:GetAbsOrigin(), true, nil, nil, DOTA_TEAM_BADGUYS)
+	end
+end
+
+CustomGameEventManager:RegisterListener("make_unit_click", onMakeUnitClick)

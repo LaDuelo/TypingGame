@@ -1,0 +1,93 @@
+<root>
+    <styles>
+        <include src="file://{resources}/styles/custom_game/unit_box.css" />
+    </styles>
+    <scripts>
+        <include src="file://{resources}/scripts/custom_game/unit_box.js" />
+    </scripts>
+    <Panel class="rightContainer">
+        <Panel  class="rightContainer" id="rightContainer">
+            <Panel class="row">
+                <Button class="box"
+                        onactivate="makeUnit(1)">
+                    <Image src="file://{images}/custom_game/le.png" scaling="stretch-to-fit-preserve-aspect" />
+                </Button>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+            </Panel>
+            <Panel class="row">
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+            </Panel>
+            <Panel class="row">
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+            </Panel>
+            <Panel class="row">
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+                <Panel class="box">
+
+                </Panel>
+            </Panel>
+        </Panel>
+    </Panel>
+</root>

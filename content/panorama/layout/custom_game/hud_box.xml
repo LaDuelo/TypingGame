@@ -7,9 +7,6 @@
 	</scripts>
 	<Panel class="someshit">
 		<TextEntry id="MyEntry" class="someShitEntry" mychars="100" placeholder="" oninputsubmit="OnSubmitted()" />
-		<Label id="MyBox">
-			jkasdfhjkah
-		</Label>
 	</Panel>
 </root>
 

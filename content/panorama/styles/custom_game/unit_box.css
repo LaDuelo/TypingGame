@@ -1,0 +1,15 @@
+.rightContainer {
+    background-color: red;
+    position: 75% 40% 0;
+    flow-children: down;
+}
+.row {
+    flow-children: right;
+}
+.box {
+    width: 50px;
+    background-color: white;
+    height: 50px;
+    margin: 5px;
+
+}
