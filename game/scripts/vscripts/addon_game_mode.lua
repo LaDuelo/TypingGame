@@ -150,7 +150,7 @@ local function onInputSubmit(eventSourceIndex, args)
 	end
 	-- we have the entered text here
 	for k,v in pairs(entityOnMap) do
-		if v == text then
+		if k ~= nil and v == text then
 			lastHitCreep(k, args)
 			break --we want to kill only one unit with the matching word
 		end
@@ -163,14 +163,13 @@ function lastHitCreep(creature, args)
 	local playerEnt = PlayerResource:GetPlayer(args['playerId'])
 	local hero = playerEnt:GetAssignedHero()
 	entToKill:Kill(nil, hero) -- THIS NOW PROPERLY WORKS NO NEED FOR PARTICLES
+	entityOnMap[creature] = nil 
 	entityOnMap[creature] = nil --might throw C++ nil object bullshit, report if it does. Possibly happens after script_reload in which case ignore
 end
 
 local function onMakeUnitClick(eventSourceIndex, args)
 	local playerId = args["playerId"]
 	local unitId = "unit" .. args["unit"]
-
-    -- todo: money shit
 
 	TypingGame:SpawnUnit(playerId,unitId);
 end
