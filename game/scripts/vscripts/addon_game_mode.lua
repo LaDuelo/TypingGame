@@ -78,8 +78,8 @@ function TypingGame:GetCreatureById(creatureId, playerId)
 
     Msg(creatureId)
     local createList = {
-        unit1 = 'npc_dota_hero_nevermore',
-        unit2 = 'npc_dota_hero_lina'
+        unit1 = 'npc_dota_neutral_rock_golem',
+        unit2 = 'npc_dota_neutral_fel_beast'
     }
 	-- todo: id => creature logic
 
@@ -142,7 +142,11 @@ local function onInputSubmit(eventSourceIndex, args)
 	-- we have the entered text here
 	for k,v in pairs(entityOnMap) do
 		if v == text then
-			k:ForceKill(false)
+			--find entity HScript and kill it
+			local entToKill = EntIndexToHScript(k:GetEntityIndex())
+			entToKill:Kill(nil, PlayerResource:GetPlayer(args['playerId']))
+			entityOnMap[k] = nil
+			break --we want to kill only one unit with matching words
 		end
 	end
 	Say(PlayerResource:GetPlayer(args['playerId']), text, false)
