@@ -2,6 +2,8 @@
 
 require("util")
 
+
+
 dictionary = {
 	word1 = "gabe",
 	word2 = "top cake",
@@ -16,6 +18,9 @@ entityOnMap = {}
 
 if TypingGame == nil then
 	_G.TypingGame = class({})
+else
+	CustomGameEventManager:UnregisterListener(list1)
+	CustomGameEventManager:UnregisterListener(list2)
 end
 
 function Precache( context )
@@ -26,12 +31,17 @@ function Precache( context )
 			PrecacheResource( "particle", "*.vpcf", context )
 			PrecacheResource( "particle_folder", "particles/folder", context )
 	]]
+	--todo: cleanup precache
 	PrecacheResource( "particle", "particles/econ/items/legion/legion_weapon_voth_domosh/legion_commander_duel_text.vpcf", context)
 	PrecacheResource( "particle", "particles/msg_fx/msg_evade.vpcf", context)
 	PrecacheResource ("model_folder", 	"models/heroes/lina", context)
 	PrecacheResource ("model_folder", "models/heroes/nevermore", context)
+	PrecacheResource ("model_folder", "models/creeps/neutral_creeps", context)
 	PrecacheResource ("particle_folder", "particles/econ/items/legion", context)
 	PrecacheResource ("particle_folder", "particles/units/heroes/hero_alchemist/", context)
+	PrecacheResource ("particle", "particles/generic_gameplay/lasthit_coins.vpcf", context)
+	PrecacheResource ("particle", "particles/msg_fx/msg_gold.vpcf", context)
+	
 end
 
 -- Create the game mode when we activate
@@ -78,14 +88,13 @@ function TypingGame:GetCreatureById(creatureId, playerId)
 
     Msg(creatureId)
     local createList = {
-        unit1 = 'npc_dota_neutral_rock_golem',
+        unit1 = 'npc_dota_creature_gnoll_assassin',
         unit2 = 'npc_dota_neutral_fel_beast'
     }
 	-- todo: id => creature logic
 
 	return CreateUnitByName(createList[creatureId], spawnLocation, true, nil, nil, TypingGame:GetTeam(playerId))
 end
-
 
 function TypingGame:SpawnUnit(playerId, creatureId)
 	local targetLocation = TypingGame:GetTargetLocation(playerId)
@@ -100,7 +109,6 @@ function TypingGame:SpawnUnit(playerId, creatureId)
 	else
 		creature:SetCustomHealthLabel(word, 100, 255, 255)
 	end
-	
 	entityOnMap[creature] = word
 end
 
@@ -118,11 +126,13 @@ function TypingGame:InitGameMode()
 	GameRules:GetGameModeEntity():SetThink( "OnThink", self, "GlobalThink", 2 )
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(false)
 	
-	ListenToGameEvent('dota_player_pick_hero', Dynamic_Wrap(TypingGame, 'OnPlayerPickHero'), self)
+	ListenToGameEvent( "entity_killed", Dynamic_Wrap( TypingGame, 'OnEntityKilled' ), self )
 	
 end
 
-
+function TypingGame:OnEntityKilled(keys)
+	--DeepPrintTable(keys)
+end
 -- Evaluate the state of the game
 function TypingGame:OnThink()
 	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
@@ -138,20 +148,23 @@ local function onInputSubmit(eventSourceIndex, args)
 	for key,value in pairs(args['text']) do
 		text = key
 	end
-
 	-- we have the entered text here
 	for k,v in pairs(entityOnMap) do
 		if v == text then
-			--find entity HScript and kill it
-			local entToKill = EntIndexToHScript(k:GetEntityIndex())
-			entToKill:Kill(nil, PlayerResource:GetPlayer(args['playerId']))
-			entityOnMap[k] = nil
-			break --we want to kill only one unit with matching words
+			lastHitCreep(k, args)
+			break --we want to kill only one unit with the matching word
 		end
 	end
 	Say(PlayerResource:GetPlayer(args['playerId']), text, false)
 end
 
+function lastHitCreep(creature, args)
+	local entToKill = EntIndexToHScript(creature:GetEntityIndex())
+	local playerEnt = PlayerResource:GetPlayer(args['playerId'])
+	local hero = playerEnt:GetAssignedHero()
+	entToKill:Kill(nil, hero) -- THIS NOW PROPERLY WORKS NO NEED FOR PARTICLES
+	entityOnMap[creature] = nil --might throw C++ nil object bullshit, report if it does. Possibly happens after script_reload in which case ignore
+end
 
 local function onMakeUnitClick(eventSourceIndex, args)
 	local playerId = args["playerId"]
@@ -162,6 +175,5 @@ local function onMakeUnitClick(eventSourceIndex, args)
 	TypingGame:SpawnUnit(playerId,unitId);
 end
 
-CustomGameEventManager:RegisterListener("input_submit", onInputSubmit)
-CustomGameEventManager:RegisterListener("make_unit_click", onMakeUnitClick)
-
+list1 = CustomGameEventManager:RegisterListener("input_submit", onInputSubmit)
+list2 = CustomGameEventManager:RegisterListener("make_unit_click", onMakeUnitClick)
