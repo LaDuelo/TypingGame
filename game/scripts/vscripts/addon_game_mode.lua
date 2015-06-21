@@ -1,7 +1,21 @@
 -- Generated from template
 
+require("util")
+
+dictionary = {
+	word1 = "gabe",
+	word2 = "top cake",
+	word3 = "top kek",
+	word4 = "ur mume",
+	word5 = "cyborgfat"
+}
+
+--Because OOP in Lua is T.R.A.S.H.
+entityOnMap = {}
+
+
 if TypingGame == nil then
-	TypingGame = class({})
+	_G.TypingGame = class({})
 end
 
 function Precache( context )
@@ -12,6 +26,12 @@ function Precache( context )
 			PrecacheResource( "particle", "*.vpcf", context )
 			PrecacheResource( "particle_folder", "particles/folder", context )
 	]]
+	PrecacheResource( "particle", "particles/econ/items/legion/legion_weapon_voth_domosh/legion_commander_duel_text.vpcf", context)
+	PrecacheResource( "particle", "particles/msg_fx/msg_evade.vpcf", context)
+	PrecacheResource ("model_folder", 	"models/heroes/lina", context)
+	PrecacheResource ("model_folder", "models/heroes/nevermore", context)
+	PrecacheResource ("particle_folder", "particles/econ/items/legion", context)
+	PrecacheResource ("particle_folder", "particles/units/heroes/hero_alchemist/", context)
 end
 
 -- Create the game mode when we activate
@@ -70,10 +90,20 @@ end
 function TypingGame:SpawnUnit(playerId, creatureId)
 	local targetLocation = TypingGame:GetTargetLocation(playerId)
 	local creature = TypingGame:GetCreatureById(creatureId, playerId);
-
+	
 	creature:SetInitialGoalEntity(targetLocation)
 	creature:SetMustReachEachGoalEntity(true)
+	
+	local word = PickRandomValue (dictionary,"word")
+	if PlayerResource:GetTeam(playerId) == DOTA_TEAM_BADGUYS then
+		creature:SetCustomHealthLabel(word, 232, 28, 28)
+	else
+		creature:SetCustomHealthLabel(word, 100, 255, 255)
+	end
+	
+	entityOnMap[creature] = word
 end
+
 
 
 function TypingGame:OnPlayerPickHero(args)
@@ -83,11 +113,13 @@ end
 
 function TypingGame:InitGameMode()
 	print( "Typing Game addon is loaded." )
+	
+	GameRules:GetGameModeEntity().TypingGame = self
 	GameRules:GetGameModeEntity():SetThink( "OnThink", self, "GlobalThink", 2 )
-
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(false)
-
+	
 	ListenToGameEvent('dota_player_pick_hero', Dynamic_Wrap(TypingGame, 'OnPlayerPickHero'), self)
+	
 end
 
 
@@ -108,6 +140,11 @@ local function onInputSubmit(eventSourceIndex, args)
 	end
 
 	-- we have the entered text here
+	for k,v in pairs(entityOnMap) do
+		if v == text then
+			k:ForceKill(false)
+		end
+	end
 	Say(PlayerResource:GetPlayer(args['playerId']), text, false)
 end
 
