@@ -18,16 +18,19 @@
                     <Image src="file://{images}/custom_Game/lina.png"
                            scaling="stretch-to-fit-preserv-easpect" />
                 </Button>
+                <Button class="box">
+                    <DOTAHeroImage heroname="npc_dota_hero_nevermore"
+                                   heroimagestyle="portrait"/>
+                </Button>
                 <Panel class="box">
-
+                    <DOTAHeroImage heroname="npc_dota_hero_nevermore"
+                                   heroimagestyle="landscape"/>
                 </Panel>
                 <Panel class="box">
-
+                    <DOTAAvatarImage steamid="local" />
                 </Panel>
                 <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
+                    <DOTAUserName steamid="local" />
 
                 </Panel>
             </Panel>
