@@ -12,6 +12,8 @@ dictionary = {
 	word5 = "cyborgfat"
 }
 
+unitPrices = { unit1 = 6, unit2 = 8}
+
 --Because OOP in Lua is T.R.A.S.H.
 entityOnMap = {}
 
@@ -84,7 +86,7 @@ function TypingGame:GetCreatureById(creatureId, playerId)
 	return CreateUnitByName(createList[creatureId], spawnLocation, true, nil, nil, TypingGame:GetTeam(playerId))
 end
 
-function TypingGame:SpawnUnit(playerId, creatureId)
+function TypingGame:SpawnUnit(playerId, creatureId, gold)
 	local targetLocation = TypingGame:GetTargetLocation(playerId)
 	local creature = TypingGame:GetCreatureById(creatureId, playerId);
 	
@@ -98,6 +100,7 @@ function TypingGame:SpawnUnit(playerId, creatureId)
 		creature:SetCustomHealthLabel(word, 100, 255, 255)
 	end
 	entityOnMap[creature] = word
+	PlayerResource:SpendGold(playerId, gold, 0)
 end
 
 function spawnFakeUnits()
@@ -147,6 +150,8 @@ function TypingGame:InitGameMode()
 	ListenToGameEvent( "entity_killed", Dynamic_Wrap( TypingGame, 'OnEntityKilled' ), self )
 	
 	Convars:RegisterCommand("spawnfake",function(...) return spawnFakeUnits() end, "Spawns 10 enemy units", FCVAR_CHEAT) --you have to type it twice to make it work, this will do for now
+	
+	local unitPricesSet = table.set(unitPrices)
 end
 
 function TypingGame:OnEntityKilled(keys)
@@ -183,15 +188,20 @@ function lastHitCreep(creature, args)
 	local playerEnt = PlayerResource:GetPlayer(args['playerId'])
 	local hero = playerEnt:GetAssignedHero()
 	entToKill:Kill(nil, hero) -- THIS NOW PROPERLY WORKS NO NEED FOR PARTICLES
-	entityOnMap[creature] = nil 
 	entityOnMap[creature] = nil --might throw C++ nil object bullshit, report if it does. Possibly happens after script_reload in which case ignore
 end
 
 local function onMakeUnitClick(eventSourceIndex, args)
 	local playerId = args["playerId"]
 	local unitId = "unit" .. args["unit"]
+	local ply = PlayerResource:GetPlayer(playerId)
+	local hero = ply:GetAssignedHero()
 
-	TypingGame:SpawnUnit(playerId,unitId);
+	if PlayerResource:GetGold(playerId) >= unitPrices[unitId] then
+		TypingGame:SpawnUnit(playerId,unitId, unitPrices[unitId])
+	else
+		Say(ply, "LOL", false)
+	end
 end
 
 list1 = CustomGameEventManager:RegisterListener("input_submit", onInputSubmit)
