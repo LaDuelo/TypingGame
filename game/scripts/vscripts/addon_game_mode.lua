@@ -36,12 +36,13 @@ function Precache( context )
 	PrecacheResource( "particle", "particles/msg_fx/msg_evade.vpcf", context)
 	PrecacheResource ("model_folder", 	"models/heroes/lina", context)
 	PrecacheResource ("model_folder", "models/heroes/nevermore", context)
-	PrecacheResource ("model_folder", "models/creeps/neutral_creeps", context)
+	--PrecacheResource ("model_folder", "models/creeps/neutral_creeps", context)
+	PrecacheResource ("model", "models/creeps/neutral_creeps/n_creep_ogre_med/n_creep_ogre_med.mdl", context)
+	PrecacheResource ("model", "models/creeps/neutral_creeps/n_creep_gnoll/n_creep_gnoll_frost.vmdl", context)
 	PrecacheResource ("particle_folder", "particles/econ/items/legion", context)
 	PrecacheResource ("particle_folder", "particles/units/heroes/hero_alchemist/", context)
 	PrecacheResource ("particle", "particles/generic_gameplay/lasthit_coins.vpcf", context)
 	PrecacheResource ("particle", "particles/msg_fx/msg_gold.vpcf", context)
-	
 end
 
 -- Create the game mode when we activate
@@ -88,8 +89,8 @@ function TypingGame:GetCreatureById(creatureId, playerId)
 
     Msg(creatureId)
     local createList = {
-        unit1 = 'npc_dota_creature_gnoll_assassin',
-        unit2 = 'npc_dota_neutral_fel_beast'
+        unit1 = 'npc_dota_creature_test_unit',
+        unit2 = 'npc_dota_creature_gnoll_assassin'
     }
 	-- todo: id => creature logic
 
@@ -112,7 +113,23 @@ function TypingGame:SpawnUnit(playerId, creatureId)
 	entityOnMap[creature] = word
 end
 
-
+function spawnFakeUnits()
+	SendToServerConsole('dota_create_fake_clients')
+	for i=0, 9 do
+		-- Check if this player is a fake one
+		if PlayerResource:IsFakeClient(i) then
+			local ply = PlayerResource:GetPlayer(i)
+			local playerID = ply:GetPlayerID()
+			ply:SetTeam(DOTA_TEAM_BADGUYS)
+			if ply then
+				for i = 0,9 do
+					SpawnUnit(playerID, 'unit1')
+				end
+			end
+			break--pls ignore this function i know it works
+		end
+	end
+end
 
 function TypingGame:OnPlayerPickHero(args)
 	print("OnPlayerPickHero")
@@ -125,14 +142,16 @@ function TypingGame:InitGameMode()
 	GameRules:GetGameModeEntity().TypingGame = self
 	GameRules:GetGameModeEntity():SetThink( "OnThink", self, "GlobalThink", 2 )
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(false)
-	
+	GameRules:GetGameModeEntity():SetCameraDistanceOverride(1600)
 	ListenToGameEvent( "entity_killed", Dynamic_Wrap( TypingGame, 'OnEntityKilled' ), self )
 	
+	--Convars:RegisterCommand(spawnfake,function(...) spawnFakeUnits() end, nil, FCVAR_CHEAT)
 end
 
 function TypingGame:OnEntityKilled(keys)
 	--DeepPrintTable(keys)
 end
+
 -- Evaluate the state of the game
 function TypingGame:OnThink()
 	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
