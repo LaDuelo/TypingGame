@@ -19,7 +19,6 @@
             </Label>
         </Panel>
         <Panel id="units" class="table">
-
         </Panel>
         <Label id="gold" class="gold playergold">
 

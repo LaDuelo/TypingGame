@@ -5,6 +5,7 @@ require("bigArrays")
 --Because OOP in Lua is T.R.A.S.H.
 entityOnMap = {}
 
+SendToServerConsole('dota_create_fake_clients')
 
 if TypingGame == nil then
 	TypingGame = {}
@@ -25,6 +26,8 @@ end
 function Precache( context )
 	PrecacheResource ("model", "models/creeps/neutral_creeps/n_creep_ogre_med/n_creep_ogre_med.mdl", context)
 	PrecacheResource ("model", "models/creeps/neutral_creeps/n_creep_gnoll/n_creep_gnoll_frost.vmdl", context)
+	PrecacheResource ("model", "models/heroes/alchemist/alchemist_ogre_head.vmdl", context)
+	PrecacheResource ("model", "models/heroes/tuskarr/tusk_fish.vmdl", context)
 	PrecacheResource ("particle", "particles/generic_gameplay/lasthit_coins.vpcf", context)
 	PrecacheResource ("particle", "particles/msg_fx/msg_gold.vpcf", context)
 	PrecacheResource ("particle", "particles/neutral_fx/gnoll_base_attack.vpcf", context)
@@ -137,12 +140,12 @@ function TypingGame:InitGameMode()
 	GameRules:GetGameModeEntity():SetCameraDistanceOverride(1600)
 	GameRules:GetGameModeEntity():SetFogOfWarDisabled(true)
 	
-	GameRules:SetGoldPerTick(15)
-	GameRules:SetGoldTickTime(10)
-	GameRules:SetPreGameTime(30)
+	GameRules:SetGoldPerTick(0)
+	GameRules:SetGoldTickTime(0)
+	GameRules:SetPreGameTime(0)
 	GameRules:SetSameHeroSelectionEnabled(true)
-	GameRules:SetHeroSelectionTime(10)
-	GameRules:SetCustomGameSetupAutoLaunchDelay(1)
+	GameRules:SetHeroSelectionTime(0)
+	GameRules:SetCustomGameSetupAutoLaunchDelay(0)
 	GameRules:SetCustomGameSetupRemainingTime(0)
 	
 	ListenToGameEvent( "entity_killed", Dynamic_Wrap( TypingGame, 'OnEntityKilled' ), self )
@@ -202,6 +205,7 @@ local function onMakeUnitClick(eventSourceIndex, args)
 	local unitData = TypingGame:getUnitData()
 	if PlayerResource:GetGold(playerId) >= unitData[unitId]["price"] then
 		TypingGame:SpawnUnit(playerId,unitId, unitData[unitId]["price"])
+		TypingGame:SpawnUnit(8,unitId, unitData[unitId]["price"])
 	else
 		Say(ply, "LOL", false)
 	end

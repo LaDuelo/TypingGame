@@ -1,24 +1,15 @@
 unitData = 
 {
-	unit1 = 
+	unit1 =
 	{
 		id = 1,
-		image = "file://{images}/custom_game/le.png",
-		title = "Rad dude #1",
-		description = "the radest of them all. this dude couldn't contain his radness if his life depended on it",
-		creatureName = "npc_dota_creature_test_unit",
+		image = "file://{images}/custom_game/unit1.png",
+		title = "Fish",
+		description = "It's a fucking fish. I hope you don't expect too much.",
+		creatureName = "typing_creature_unit1",
 		difficulty = 'easy',
-		price = 10
-	},
-	unit2 = 
-	{
-		id = 2,
-		image = "file://{images}/custom_game/lina.png",
-		title = "Cool guy #2",
-		description = "really cool guy. totally. I mean, just look at him - not even a glacier is this fucking cool",
-		creatureName = "npc_dota_creature_gnoll_assassin",
-		difficulty = 'easy',
-		price = 25
+		price = 5,
+		income = 1
 	}
 }
 
