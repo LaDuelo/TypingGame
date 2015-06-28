@@ -73,11 +73,6 @@ function PrintTable(t, indent, done)
 	end
 end
 
-function table.set(t) -- set of list
-  local u = { }
-  for _, v in ipairs(t) do u[v] = true end
-  return u
-end
 
 function table.find(f, l) -- find element v of l satisfying f(v)
   for _, v in ipairs(l) do

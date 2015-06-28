@@ -1,22 +1,6 @@
 require("util")
 
 -- TODO: dan pls poutt thsi osmehere proetty thanks al to m8
-local unitData = {
-	unit1 = {
-		id = 1,
-		image = "file://{images}/custom_game/le.png",
-		title = "Rad dude #1",
-		description = "the radest of them all. this dude couldn't contain his radness if his life depended on it",
-		price = 10
-	},
-	unit2 = {
-		id = 2,
-		image = "file://{images}/custom_game/lina.png",
-		title = "Cool guy #2",
-		description = "really cool guy. totally. I mean, just look at him - not even a glacier is this fucking cool",
-		price = 25
-	}
-}
 
 dictionary = {
 	word1 = "gabe",
@@ -37,7 +21,14 @@ else
 	--making sure we don't spawn more than one per click after script_reload
 	CustomGameEventManager:UnregisterListener(list1)
 	CustomGameEventManager:UnregisterListener(list2)
+	CustomGameEventManager:UnregisterListener(list3)
 end
+
+-- function TypingGame:new()
+	-- local self = setmetatable({}, MyClass)
+	-- self.value = init
+	-- return self
+-- end
 
 function Precache( context )
 	PrecacheResource ("model", "models/creeps/neutral_creeps/n_creep_ogre_med/n_creep_ogre_med.mdl", context)
@@ -49,8 +40,8 @@ end
 
 -- Create the game mode when we activate
 function Activate()
-	GameRules.AddonTemplate = TypingGame()
-	GameRules.AddonTemplate:InitGameMode()
+	GameRules.TypingGame = TypingGame()
+	GameRules.TypingGame:InitGameMode()
 end
 
 function TypingGame:IsPlayerRadiant(playerId)
@@ -90,13 +81,12 @@ function TypingGame:GetCreatureById(creatureId, playerId)
 	local spawnLocation = TypingGame:GetSpawnLocation(playerId)
 
     Msg(creatureId)
-    local createList = {
-        unit1 = 'npc_dota_creature_test_unit',
-        unit2 = 'npc_dota_creature_gnoll_assassin'
-    }
 	-- todo: id => creature logic
-
-	return CreateUnitByName(createList[creatureId], spawnLocation, true, nil, nil, TypingGame:GetTeam(playerId))
+	--BUG
+	print("DEEP PRINT")
+	DeepPrintTable(self.unitData)
+	print(self.unitData[creatureId].creatureName)
+	return CreateUnitByName(self.unitData[creatureId].creatureName, spawnLocation, true, nil, nil, TypingGame:GetTeam(playerId))
 end
 
 function TypingGame:SpawnUnit(playerId, creatureId, gold)
@@ -144,7 +134,7 @@ end
 
 function TypingGame:InitGameMode()
 	print( "Typing Game addon is loaded." )
-	
+
 	GameRules:GetGameModeEntity().TypingGame = self
 	GameRules:GetGameModeEntity():SetThink( "OnThink", self, "GlobalThink", 2 )
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(false)
@@ -164,7 +154,24 @@ function TypingGame:InitGameMode()
 	
 	Convars:RegisterCommand("spawnfake",function(...) return spawnFakeUnits() end, "Spawns 10 enemy units", FCVAR_CHEAT) --you have to type it twice to make it work, this will do for now
 	
-	local unitPricesSet = table.set(unitPrices)
+	self.unitData = {
+	unit1 = {
+		id = 1,
+		image = "file://{images}/custom_game/le.png",
+		title = "Rad dude #1",
+		description = "the radest of them all. this dude couldn't contain his radness if his life depended on it",
+		creatureName = "npc_dota_creature_test_unit",
+		price = 10
+	},
+	unit2 = {
+		id = 2,
+		image = "file://{images}/custom_game/lina.png",
+		title = "Cool guy #2",
+		description = "really cool guy. totally. I mean, just look at him - not even a glacier is this fucking cool",
+		creatureName = "npc_dota_creature_gnoll_assassin",
+		price = 25
+	}
+}
 end
 
 function TypingGame:OnEntityKilled(keys)
@@ -219,10 +226,9 @@ end
 
 list1 = CustomGameEventManager:RegisterListener("input_submit", onInputSubmit)
 list2 = CustomGameEventManager:RegisterListener("make_unit_click", onMakeUnitClick)
+list3 = CustomGameEventManager:RegisterListener("request_unit_data", onUnitDataRequest);
 
 function onUnitDataRequest( eventSourceIndex, args)
 	Msg("foo");
 	CustomGameEventManager:Send_ServerToPlayer(PlayerResource:GetPlayer(args["player"]), "transmit_unit_data", unitData)
 end
-
-CustomGameEventManager:RegisterListener("request_unit_data", onUnitDataRequest);
