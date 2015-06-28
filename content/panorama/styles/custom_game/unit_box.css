@@ -1,21 +1,70 @@
 .rightContainer {
-    background-color: #212226;
-    position: 75% 40% 1px;
-    border-radius: 10px;
-    padding: 5px;
-    border: 2px solid #111111;
+    position: 1360px 0% 0%;
+    width: 600px;
+    height: 100%;
+    background-color: rgba(0,0,0,0.1);
 }
 .table {
+    background-color: #212226;
+    width: 600px;
+    height: 200px;
+    position: 0px 910px 0px;
     flow-children: down;
+    padding: 5px;
+    border: 2px solid #111111;
+    border-width: 2px 0 0 0;
 }
 .row {
     flow-children: right;
 }
 .box {
-    width: 50px;
-    height: 50px;
-    margin: 5px;
+    width: 48px;
+    height: 48px;
+    margin: 3px;
     border: 1px solid #111111;
     border-radius: 10px;
     box-shadow: inset 5px 5px 5px 5px rgba(0,0,0,255);
+}
+.tooltip {
+}
+#shiet {
+    position: 0 0 0;
+    background-color: red;
+    width: 50px;
+    height: 50px;
+}
+.tooltip {
+    width: 450px;
+    height: 400px;
+    background-color : rgba(0,0,0,205);
+    position: 50px 450px 0;
+
+    flow-children: down;
+    color: white;
+    padding: 15px;
+    border: 5px solid rgba(0,0,0,105);
+}
+#tooltip-title {
+    font-size: 32px;
+    margin-bottom: 16px;
+}
+#tooltip-text {
+    font-size: 24px;
+}
+#tooltip-gold {
+    font-size: 32px;
+    margin-top: 25px;
+    color: yellow;
+}
+
+.gold {
+    position: 60% 5% 0;
+    width: 170px;
+    height: 50px;
+    background-color: #121212;
+    color: #ffd300;
+    border-radius: 20px;
+    text-align: center;
+    line-height: 40px;
+    font-size: 30px;
 }

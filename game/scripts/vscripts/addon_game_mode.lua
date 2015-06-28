@@ -1,8 +1,22 @@
--- Generated from template
-
 require("util")
 
-
+-- TODO: dan pls poutt thsi osmehere proetty thanks al to m8
+local unitData = {
+	unit1 = {
+		id = 1,
+		image = "file://{images}/custom_game/le.png",
+		title = "Rad dude #1",
+		description = "the radest of them all. this dude couldn't contain his radness if his life depended on it",
+		price = 10
+	},
+	unit2 = {
+		id = 2,
+		image = "file://{images}/custom_game/lina.png",
+		title = "Cool guy #2",
+		description = "really cool guy. totally. I mean, just look at him - not even a glacier is this fucking cool",
+		price = 25
+	}
+}
 
 dictionary = {
 	word1 = "gabe",
@@ -12,7 +26,6 @@ dictionary = {
 	word5 = "cyborgfat"
 }
 
-unitPrices = { unit1 = 6, unit2 = 8}
 
 --Because OOP in Lua is T.R.A.S.H.
 entityOnMap = {}
@@ -197,8 +210,8 @@ local function onMakeUnitClick(eventSourceIndex, args)
 	local ply = PlayerResource:GetPlayer(playerId)
 	local hero = ply:GetAssignedHero()
 
-	if PlayerResource:GetGold(playerId) >= unitPrices[unitId] then
-		TypingGame:SpawnUnit(playerId,unitId, unitPrices[unitId])
+	if PlayerResource:GetGold(playerId) >= unitData[unitId]["price"] then
+		TypingGame:SpawnUnit(playerId,unitId, unitData[unitId]["price"])
 	else
 		Say(ply, "LOL", false)
 	end
@@ -206,3 +219,10 @@ end
 
 list1 = CustomGameEventManager:RegisterListener("input_submit", onInputSubmit)
 list2 = CustomGameEventManager:RegisterListener("make_unit_click", onMakeUnitClick)
+
+function onUnitDataRequest( eventSourceIndex, args)
+	Msg("foo");
+	CustomGameEventManager:Send_ServerToPlayer(PlayerResource:GetPlayer(args["player"]), "transmit_unit_data", unitData)
+end
+
+CustomGameEventManager:RegisterListener("request_unit_data", onUnitDataRequest);

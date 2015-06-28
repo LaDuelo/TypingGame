@@ -3,97 +3,26 @@
         <include src="file://{resources}/styles/custom_game/unit_box.css" />
     </styles>
     <scripts>
+
         <include src="file://{resources}/scripts/custom_game/unit_box.js" />
     </scripts>
-    <Panel class="rightContainer">
-        <Panel  class="table">
-            <Panel class="row">
-                <Button class="box"
-                        onactivate="makeUnit(1)">
-                    <Image src="file://{images}/custom_game/le.png"
-                           scaling="stretch-to-fit-preserve-aspect" />
-                </Button>
-                <Button class="box"
-                        onactivate="makeUnit(2)">
-                    <Image src="file://{images}/custom_Game/lina.png"
-                           scaling="stretch-to-fit-preserv-easpect" />
-                </Button>
-                <Button class="box">
-                    <DOTAHeroImage heroname="npc_dota_hero_nevermore"
-                                   heroimagestyle="portrait"/>
-                </Button>
-                <Panel class="box">
-                    <DOTAHeroImage heroname="npc_dota_hero_nevermore"
-                                   heroimagestyle="landscape"/>
-                </Panel>
-                <Panel class="box">
-                    <DOTAAvatarImage steamid="local" />
-                </Panel>
-                <Panel class="box">
-                    <DOTAUserName steamid="local" />
+    <Panel hittest="false" class="rightContainer">
+        <Panel hittest="false" id="tooltip" class="tooltip">
+            <Label id="tooltip-title">
 
-                </Panel>
-            </Panel>
-            <Panel class="row">
-                <Panel class="box">
+            </Label>
+            <Label id="tooltip-text">
 
-                </Panel>
-                <Panel class="box">
+            </Label>
+            <Label id="tooltip-gold">
 
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-            </Panel>
-            <Panel class="row">
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-            </Panel>
-            <Panel class="row">
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-                <Panel class="box">
-
-                </Panel>
-            </Panel>
+            </Label>
         </Panel>
+        <Panel id="units" class="table">
+
+        </Panel>
+        <Label id="gold" class="gold playergold">
+
+        </Label>
     </Panel>
 </root>

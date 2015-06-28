@@ -14,4 +14,6 @@ function OnSubmitted(){
         playerId: Game.GetLocalPlayerID(),
         text: obj
     });
+
+    input.text = "";
 }
