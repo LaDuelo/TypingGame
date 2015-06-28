@@ -1,34 +1,26 @@
 require("util")
-
+require("bigArrays")
 -- TODO: dan pls poutt thsi osmehere proetty thanks al to m8
-
-dictionary = {
-	word1 = "gabe",
-	word2 = "top cake",
-	word3 = "top kek",
-	word4 = "ur mume",
-	word5 = "cyborgfat"
-}
-
 
 --Because OOP in Lua is T.R.A.S.H.
 entityOnMap = {}
 
 
 if TypingGame == nil then
-	_G.TypingGame = class({})
+	TypingGame = {}
+	TypingGame.__index = TypingGame
 else
+	print("Unregistering listeners")
 	--making sure we don't spawn more than one per click after script_reload
 	CustomGameEventManager:UnregisterListener(list1)
 	CustomGameEventManager:UnregisterListener(list2)
 	CustomGameEventManager:UnregisterListener(list3)
 end
 
--- function TypingGame:new()
-	-- local self = setmetatable({}, MyClass)
-	-- self.value = init
-	-- return self
--- end
+function TypingGame.new()
+	self = setmetatable({}, TypingGame)
+	return self
+end
 
 function Precache( context )
 	PrecacheResource ("model", "models/creeps/neutral_creeps/n_creep_ogre_med/n_creep_ogre_med.mdl", context)
@@ -40,8 +32,8 @@ end
 
 -- Create the game mode when we activate
 function Activate()
-	GameRules.TypingGame = TypingGame()
-	GameRules.TypingGame:InitGameMode()
+	--GameRules.TypingGame = TypingGame()
+	TypingGame:InitGameMode()
 end
 
 function TypingGame:IsPlayerRadiant(playerId)
@@ -82,11 +74,9 @@ function TypingGame:GetCreatureById(creatureId, playerId)
 
     Msg(creatureId)
 	-- todo: id => creature logic
-	--BUG
-	print("DEEP PRINT")
-	DeepPrintTable(self.unitData)
-	print(self.unitData[creatureId].creatureName)
-	return CreateUnitByName(self.unitData[creatureId].creatureName, spawnLocation, true, nil, nil, TypingGame:GetTeam(playerId))
+	--Bugged?
+	local unitData = TypingGame:getUnitData()
+	return CreateUnitByName(unitData[creatureId].creatureName, spawnLocation, true, nil, nil, TypingGame:GetTeam(playerId))
 end
 
 function TypingGame:SpawnUnit(playerId, creatureId, gold)
@@ -95,8 +85,15 @@ function TypingGame:SpawnUnit(playerId, creatureId, gold)
 	
 	creature:SetInitialGoalEntity(targetLocation)
 	creature:SetMustReachEachGoalEntity(true)
+	local word
+	if self.unitData[creatureId].difficulty == 'easy' then
+		word = PickRandomValue(dict_easy, "word")
+	elseif self.unitData[creatureId].difficulty == 'medium' then
+		word = PickRandomValue(dict_medium, "word")
+	elseif self.unitData[creatureId].difficulty == 'hard' then
+		word = PickRandomValue(dict_hard, "word")
+	end
 	
-	local word = PickRandomValue (dictionary,"word")
 	if PlayerResource:GetTeam(playerId) == DOTA_TEAM_BADGUYS then
 		creature:SetCustomHealthLabel(word, 232, 28, 28)
 	else
@@ -134,12 +131,11 @@ end
 
 function TypingGame:InitGameMode()
 	print( "Typing Game addon is loaded." )
-
 	GameRules:GetGameModeEntity().TypingGame = self
 	GameRules:GetGameModeEntity():SetThink( "OnThink", self, "GlobalThink", 2 )
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(false)
 	GameRules:GetGameModeEntity():SetCameraDistanceOverride(1600)
-	
+	GameRules:GetGameModeEntity():SetFogOfWarDisabled(true)
 	
 	GameRules:SetGoldPerTick(15)
 	GameRules:SetGoldTickTime(10)
@@ -149,29 +145,11 @@ function TypingGame:InitGameMode()
 	GameRules:SetCustomGameSetupAutoLaunchDelay(1)
 	GameRules:SetCustomGameSetupRemainingTime(0)
 	
-	
 	ListenToGameEvent( "entity_killed", Dynamic_Wrap( TypingGame, 'OnEntityKilled' ), self )
 	
 	Convars:RegisterCommand("spawnfake",function(...) return spawnFakeUnits() end, "Spawns 10 enemy units", FCVAR_CHEAT) --you have to type it twice to make it work, this will do for now
 	
-	self.unitData = {
-	unit1 = {
-		id = 1,
-		image = "file://{images}/custom_game/le.png",
-		title = "Rad dude #1",
-		description = "the radest of them all. this dude couldn't contain his radness if his life depended on it",
-		creatureName = "npc_dota_creature_test_unit",
-		price = 10
-	},
-	unit2 = {
-		id = 2,
-		image = "file://{images}/custom_game/lina.png",
-		title = "Cool guy #2",
-		description = "really cool guy. totally. I mean, just look at him - not even a glacier is this fucking cool",
-		creatureName = "npc_dota_creature_gnoll_assassin",
-		price = 25
-	}
-}
+	self.unitData = unitData
 end
 
 function TypingGame:OnEntityKilled(keys)
@@ -186,6 +164,11 @@ function TypingGame:OnThink()
 		return nil
 	end
 	return 1
+end
+
+function TypingGame:getUnitData()
+--Registering a listener with Dynamic_Wrap and accessing self throws attempt to index local 'self' (a number value), but this works, so top kek
+	return self.unitData
 end
 
 local function onInputSubmit(eventSourceIndex, args)
@@ -216,7 +199,7 @@ local function onMakeUnitClick(eventSourceIndex, args)
 	local unitId = "unit" .. args["unit"]
 	local ply = PlayerResource:GetPlayer(playerId)
 	local hero = ply:GetAssignedHero()
-
+	local unitData = TypingGame:getUnitData()
 	if PlayerResource:GetGold(playerId) >= unitData[unitId]["price"] then
 		TypingGame:SpawnUnit(playerId,unitId, unitData[unitId]["price"])
 	else
@@ -224,11 +207,12 @@ local function onMakeUnitClick(eventSourceIndex, args)
 	end
 end
 
-list1 = CustomGameEventManager:RegisterListener("input_submit", onInputSubmit)
-list2 = CustomGameEventManager:RegisterListener("make_unit_click", onMakeUnitClick)
-list3 = CustomGameEventManager:RegisterListener("request_unit_data", onUnitDataRequest);
-
 function onUnitDataRequest( eventSourceIndex, args)
 	Msg("foo");
+	local unitData = TypingGame:getUnitData()
 	CustomGameEventManager:Send_ServerToPlayer(PlayerResource:GetPlayer(args["player"]), "transmit_unit_data", unitData)
 end
+
+list1 = CustomGameEventManager:RegisterListener("input_submit", onInputSubmit)
+list2 = CustomGameEventManager:RegisterListener("make_unit_click", onMakeUnitClick)
+list3 = CustomGameEventManager:RegisterListener("request_unit_data", onUnitDataRequest)
