@@ -23,5 +23,13 @@
         <Label id="gold" class="gold playergold">
 
         </Label>
+        <Panel id="income">
+            <Label class="title" text="Income:">
+
+            </Label>
+            <Panel id="income-list">
+
+            </Panel>
+        </Panel>
     </Panel>
 </root>

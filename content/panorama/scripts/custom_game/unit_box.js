@@ -11,6 +11,7 @@ unitHud.init = function () {
     unitHud.tooltip.init();
     unitHud.units.init();
     unitHud.goldDisplay.init();
+    unitHud.incomeDisplay.init();
 
     GameEvents.SendCustomGameEventToServer("request_unit_data", {"player": Game.GetLocalPlayerID()});
     GameEvents.Subscribe("transmit_unit_data", unitHud.units.setUnitData);
@@ -72,6 +73,48 @@ unitHud.goldDisplay.loop = function () {
     $('#gold').text = Players.GetGold(Game.GetLocalPlayerID()) + "g";
 
     $.Schedule(0.1, unitHud.goldDisplay.loop);
+};
+
+unitHud.incomeDisplay = {};
+unitHud.incomeDisplay.init = function (){
+    GameEvents.Subscribe("income_updated", unitHud.incomeDisplay.callback);
+};
+
+unitHud.incomeDisplay.callback = function (data){
+    unitHud.incomeDisplay.draw(data);
+};
+
+unitHud.incomeDisplay.draw = function(players){
+    var incomeList = $('#income-list');
+
+    incomeList
+        .Children()
+        .forEach(
+            function(child){
+                child.DeleteAsync(0);
+            }
+        );
+
+    Object.keys(players).forEach(function(key){
+        key = parseInt(key, 10);
+        if(!Players.IsValidPlayer(key)){
+            return;
+        }
+        var player = $.CreatePanel('Label', incomeList, '');
+        var playerColor = Players.GetPlayerColor(key);
+        $.Msg((function(){var a = {}; a[playerColor] = true;}()));
+        player.AddClass('player');
+        player.style.color =
+            "#" +
+            playerColor
+                .toString(16)
+                .match( /.{1,2}/g)
+                .reverse()
+                .join('')
+                .slice(0,6);
+        player.text = Players.GetPlayerName(key) + ": " + Math.floor(players[key]);
+    });
+
 };
 
 
@@ -146,7 +189,6 @@ unitHud.units.destroy = function () {
             child.Delete();
         });
 };
-
 
 unitHud.units.onUnitClick = function (unitId) {
     GameEvents.SendCustomGameEventToServer("make_unit_click", {

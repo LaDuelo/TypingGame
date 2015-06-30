@@ -217,7 +217,8 @@ function TypingGame:InitGameMode()
 	ListenToGameEvent( "game_rules_state_change", Dynamic_Wrap( TypingGame, 'OnGameRulesStateChange' ), self )
 	
 	Convars:RegisterCommand("spawnfake",function(...) return spawnFakeUnits() end, "Spawns 10 enemy units", FCVAR_CHEAT) --you have to type it twice to make it work, this will do for now
-	
+	Convars:SetInt("dota_render_crop_height", 0)
+
 	self.unitData = unitData
 end
 

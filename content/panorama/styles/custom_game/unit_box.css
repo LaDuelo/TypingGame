@@ -6,13 +6,13 @@
 }
 .table {
     background-color: #212226;
-    width: 600px;
+    width: 420px;
     height: 200px;
-    position: 0px 910px 0px;
+    position: 80px 820px 0px;
     flow-children: down;
     padding: 5px;
     border: 2px solid #111111;
-    border-width: 2px 0 0 0;
+    border-radius: 10px;
 }
 .row {
     flow-children: right;
@@ -35,7 +35,7 @@
 }
 .tooltip {
     width: 450px;
-    height: 400px;
+    height: 340px;
     background-color : rgba(0,0,0,205);
     position: 50px 450px 0;
 
@@ -58,13 +58,33 @@
 }
 
 .gold {
-    position: 60% 5% 0;
+    position: 60% 4px 0;
     width: 170px;
-    height: 50px;
+    height: 36px;
     background-color: #121212;
     color: #ffd300;
     border-radius: 20px;
     text-align: center;
-    line-height: 40px;
-    font-size: 30px;
+    line-height: 32px;
+    font-size: 24px;
+}
+
+#income {
+    position: 20% 10% 0;
+    width: 380px;
+    padding: 20px;
+    border-radius: 10px;
+
+    background-color: #212226;
+
+    color: white;
+    line-height: 20px;
+    flow-children: down;
+}
+#income .player,
+#income .title {
+    font-size: 24px;
+}
+#income .player {
+    margin-top: 10px;
 }
