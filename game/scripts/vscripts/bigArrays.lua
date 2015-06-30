@@ -1,3 +1,14 @@
+--[[
+Template for a unit:
+	id = 1
+	image = "file://{images}/custom_game/unit1.png",
+	title = "Fish",
+	description = "It's a fucking fish. I hope you don't expect too much.",
+	creatureName = "typing_creature_unit1",
+	difficulty = 'easy', -- easy, medium or hard
+	mathType = "AddSub", --OPTIONAL, can be left out. AddSub or MulDiv
+	price = 5
+]]
 unitData = 
 {
 	unit1 =
@@ -8,8 +19,18 @@ unitData =
 		description = "It's a fucking fish. I hope you don't expect too much.",
 		creatureName = "typing_creature_unit1",
 		difficulty = 'easy',
-		price = 5,
-		income = 1
+		price = 5
+	},
+	unit2 =
+	{
+		id = 2,
+		image = "file://{images}/custom_game/unit1.png",
+		title = "math_test",
+		description = "It's a fucking fish. I hope you don't expect too much.",
+		creatureName = "typing_creature_unit1",
+		difficulty = 'easy',
+		mathType = "AddSub",
+		price = 5
 	}
 }
 

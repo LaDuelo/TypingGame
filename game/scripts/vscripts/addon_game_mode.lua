@@ -4,7 +4,10 @@ require("notifications")
 require("bigArrays")
 require("income")
 --require("creeps")
---Because OOP in Lua is T.R.A.S.H.
+MATH_EASY_ADDSUB_LIMIT = {1,20}
+MATH_MEDIUM_ADDSUB_LIMIT = {21, 50}
+MATH_HARD_ADDSUB_LIMIT = {51, 100}
+
 entityOnMap = {}
 
 
@@ -86,39 +89,60 @@ end
 function TypingGame:SpawnUnit(playerId, creatureId, gold, useMath, answer)
 	local targetLocation = TypingGame:GetTargetLocation(playerId)
 	local creature = TypingGame:GetCreatureById(creatureId, playerId)
-	--work out how do we include different types of math, addition and multiplication
-	-- if useMath then
-		-- local creep
-		-- Creep:init(creatureId, answer, useMath)
-	-- else
-		-- local word
-		-- if self.unitData[creatureId].difficulty == 'easy' then
-			-- word = PickRandomValue(dict_easy, "word")
-		-- elseif self.unitData[creatureId].difficulty == 'medium' then
-			-- word = PickRandomValue(dict_medium, "word")
-		-- elseif self.unitData[creatureId].difficulty == 'hard' then
-			-- word = PickRandomValue(dict_hard, "word")
-		-- end
-		-- --local creep = Creep:init(creatureId, word)
-	-- end
-	--Creep:test(creep)
-	local word
-	if self.unitData[creatureId].difficulty == 'easy' then
-		word = PickRandomValue(dict_easy, "word")
-	elseif self.unitData[creatureId].difficulty == 'medium' then
-		word = PickRandomValue(dict_medium, "word")
-	elseif self.unitData[creatureId].difficulty == 'hard' then
-		word = PickRandomValue(dict_hard, "word")
+	local answer
+	local int1, int2, symbol
+	local addsub = {"+", "-"}
+	local math_label
+	print("ONE")
+	if self.unitData[creatureId].mathType == nil then
+		if self.unitData[creatureId].difficulty == 'easy' then
+			answer = PickRandomValue(dict_easy, "word")
+		elseif self.unitData[creatureId].difficulty == 'medium' then
+			answer = PickRandomValue(dict_medium, "word")
+		elseif self.unitData[creatureId].difficulty == 'hard' then
+			answer = PickRandomValue(dict_hard, "word")
+		end
+	elseif self.unitData[creatureId].mathType == "AddSub" then
+		if self.unitData[creatureId].difficulty == 'easy' then
+			answer = PickMathValue(MATH_EASY_ADDSUB_LIMIT)
+		elseif self.unitData[creatureId].difficulty == 'medium' then
+			answer = PickMathValue(MATH_MEDIUM_ADDSUB_LIMIT)
+		elseif self.unitData[creatureId].difficulty == 'hard' then
+			answer = PickMathValue(MATH_MEDIUM_ADDSUB_LIMIT)
+		end
+		symbol = (addsub[math.random(1,#addsub)])
+		if symbol == "+" then
+			int1 = RandomInt(1, answer)
+			int2 = answer - int1
+		else
+			int2 = RandomInt(1, answer)
+			int1 = answer + int2
+		end
+		
+	end
+	print("TWO")
+	if self.unitData[creatureId].mathType == nil then
+		if PlayerResource:GetTeam(playerId) == DOTA_TEAM_BADGUYS then
+			creature:SetCustomHealthLabel(answer, 232, 28, 28)
+		else
+			creature:SetCustomHealthLabel(answer, 100, 255, 255)
+		end
+		entityOnMap[creature] = answer
+	elseif self.unitData[creatureId].mathType == "AddSub" then
+		math_label = int1.." "..symbol.." "..int2
+		print(math_label)
+		if PlayerResource:GetTeam(playerId) == DOTA_TEAM_BADGUYS then
+			creature:SetCustomHealthLabel(math_label, 232, 28, 28)
+		else
+			creature:SetCustomHealthLabel(math_label, 100, 255, 255)
+		end
+		entityOnMap[creature] = answer
+		print(entityOnMap[creature])
 	end
 	creature:SetInitialGoalEntity(targetLocation)
 	creature:SetMustReachEachGoalEntity(true)
-	
-	if PlayerResource:GetTeam(playerId) == DOTA_TEAM_BADGUYS then
-		creature:SetCustomHealthLabel(word, 232, 28, 28)
-	else
-		creature:SetCustomHealthLabel(word, 100, 255, 255)
-	end
-	entityOnMap[creature] = word
+
+	print("FIVE")
 	PlayerResource:SpendGold(playerId, gold, 0)
 	creepSpawn(gold, playerId)
 end
@@ -218,15 +242,24 @@ end
 
 local function onInputSubmit(eventSourceIndex, args)
 	local text
+	local bool_creepKilled = false
 	for key,value in pairs(args['text']) do
 		text = key
 	end
 	-- we have the entered text here
 	for k,v in pairs(entityOnMap) do
+		print(type(v))
+		if type(v) == "number" then
+			v = tostring(v)
+		end
 		if k ~= nil and v == text then
 			lastHitCreep(k, args)
+			bool_creepKilled = true
 			break --we want to kill only one unit with the matching word
 		end
+	end
+	if bool_creepKilled == false then
+		wrongWord(args['playerId'], k)
 	end
 	Say(PlayerResource:GetPlayer(args['playerId']), text, false)
 end
@@ -247,7 +280,7 @@ local function onMakeUnitClick(eventSourceIndex, args)
 	local unitData = TypingGame:getUnitData()
 	if PlayerResource:GetGold(playerId) >= unitData[unitId]["price"] then
 		TypingGame:SpawnUnit(playerId,unitId, unitData[unitId]["price"])
-		TypingGame:SpawnUnit(8,unitId, unitData[unitId]["price"])
+		--TypingGame:SpawnUnit(8,unitId, unitData[unitId]["price"])
 	else
 		Say(ply, "LOL", false)
 	end

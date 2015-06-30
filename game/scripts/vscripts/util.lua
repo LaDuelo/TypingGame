@@ -35,6 +35,13 @@ function PickRandomValue(t, opt)
     return t[ opt..pick_index ]
 end
 
+function PickMathValue(t)
+	if (TableCount(t) == 0) then
+		return nil
+	end
+	return RandomInt(t[1], t[2]) --ayy lamo lua starts counting from 1 and not 0
+end
+
 function PrintTable(t, indent, done)
 	--print ( string.format ('PrintTable type %s', type(keys)) )
 	if type(t) ~= "table" then return end
