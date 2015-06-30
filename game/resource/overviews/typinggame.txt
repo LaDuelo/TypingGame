@@ -1,0 +1,8 @@
+typinggame
+{
+	material materials/overviews/typinggame.vmat
+	pos_x -4680
+	pos_y 5092
+	scale 4.883
+}
+
