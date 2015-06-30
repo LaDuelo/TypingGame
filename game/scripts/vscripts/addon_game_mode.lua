@@ -200,7 +200,7 @@ function TypingGame:InitGameMode()
 	GameRules:GetGameModeEntity().TypingGame = self
 	GameRules:GetGameModeEntity():SetThink( "OnThink", self, "GlobalThink", 2 )
 	GameRules:GetGameModeEntity():SetTowerBackdoorProtectionEnabled(false)
-	GameRules:GetGameModeEntity():SetCameraDistanceOverride(1600)
+	GameRules:GetGameModeEntity():SetCameraDistanceOverride(2000)
 	GameRules:GetGameModeEntity():SetFogOfWarDisabled(true)
 	
 	GameRules:SetGoldPerTick(0)
