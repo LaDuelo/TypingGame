@@ -1,11 +1,12 @@
 require("util")
+require("timers")
+require("notifications")
 require("bigArrays")
--- TODO: dan pls poutt thsi osmehere proetty thanks al to m8
-
+require("income")
+--require("creeps")
 --Because OOP in Lua is T.R.A.S.H.
 entityOnMap = {}
 
-SendToServerConsole('dota_create_fake_clients')
 
 if TypingGame == nil then
 	TypingGame = {}
@@ -27,7 +28,7 @@ function Precache( context )
 	PrecacheResource ("model", "models/creeps/neutral_creeps/n_creep_ogre_med/n_creep_ogre_med.mdl", context)
 	PrecacheResource ("model", "models/creeps/neutral_creeps/n_creep_gnoll/n_creep_gnoll_frost.vmdl", context)
 	PrecacheResource ("model", "models/heroes/alchemist/alchemist_ogre_head.vmdl", context)
-	PrecacheResource ("model", "models/heroes/tuskarr/tusk_fish.vmdl", context)
+	PrecacheResource ("model_folder", "models/heroes/tuskarr", context)
 	PrecacheResource ("particle", "particles/generic_gameplay/lasthit_coins.vpcf", context)
 	PrecacheResource ("particle", "particles/msg_fx/msg_gold.vpcf", context)
 	PrecacheResource ("particle", "particles/neutral_fx/gnoll_base_attack.vpcf", context)
@@ -82,12 +83,25 @@ function TypingGame:GetCreatureById(creatureId, playerId)
 	return CreateUnitByName(unitData[creatureId].creatureName, spawnLocation, true, nil, nil, TypingGame:GetTeam(playerId))
 end
 
-function TypingGame:SpawnUnit(playerId, creatureId, gold)
+function TypingGame:SpawnUnit(playerId, creatureId, gold, useMath, answer)
 	local targetLocation = TypingGame:GetTargetLocation(playerId)
-	local creature = TypingGame:GetCreatureById(creatureId, playerId);
-	
-	creature:SetInitialGoalEntity(targetLocation)
-	creature:SetMustReachEachGoalEntity(true)
+	local creature = TypingGame:GetCreatureById(creatureId, playerId)
+	--work out how do we include different types of math, addition and multiplication
+	-- if useMath then
+		-- local creep
+		-- Creep:init(creatureId, answer, useMath)
+	-- else
+		-- local word
+		-- if self.unitData[creatureId].difficulty == 'easy' then
+			-- word = PickRandomValue(dict_easy, "word")
+		-- elseif self.unitData[creatureId].difficulty == 'medium' then
+			-- word = PickRandomValue(dict_medium, "word")
+		-- elseif self.unitData[creatureId].difficulty == 'hard' then
+			-- word = PickRandomValue(dict_hard, "word")
+		-- end
+		-- --local creep = Creep:init(creatureId, word)
+	-- end
+	--Creep:test(creep)
 	local word
 	if self.unitData[creatureId].difficulty == 'easy' then
 		word = PickRandomValue(dict_easy, "word")
@@ -96,6 +110,8 @@ function TypingGame:SpawnUnit(playerId, creatureId, gold)
 	elseif self.unitData[creatureId].difficulty == 'hard' then
 		word = PickRandomValue(dict_hard, "word")
 	end
+	creature:SetInitialGoalEntity(targetLocation)
+	creature:SetMustReachEachGoalEntity(true)
 	
 	if PlayerResource:GetTeam(playerId) == DOTA_TEAM_BADGUYS then
 		creature:SetCustomHealthLabel(word, 232, 28, 28)
@@ -132,6 +148,28 @@ function TypingGame:OnPlayerPickHero(args)
 	DeepPrintTable(args)
 end
 
+function TypingGame:OnPlayerConnect(args)
+	--[[ args:
+		[   VScript ]: {
+		[   VScript ]:    index                           	= 0 (number)
+		[   VScript ]:    userid                          	= 1 (number)
+		[   VScript ]:    splitscreenplayer               	= -1 (number)
+		[   VScript ]: }
+	]]
+	initIncome(args["index"])
+end
+
+
+ 
+function TypingGame:OnGameRulesStateChange(args)
+--create income timer
+	print("GAME STATE: "..GameRules:State_Get())
+	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
+		giveIncome()
+	end
+
+end
+
 function TypingGame:InitGameMode()
 	print( "Typing Game addon is loaded." )
 	GameRules:GetGameModeEntity().TypingGame = self
@@ -148,7 +186,10 @@ function TypingGame:InitGameMode()
 	GameRules:SetCustomGameSetupAutoLaunchDelay(0)
 	GameRules:SetCustomGameSetupRemainingTime(0)
 	
+	
 	ListenToGameEvent( "entity_killed", Dynamic_Wrap( TypingGame, 'OnEntityKilled' ), self )
+	ListenToGameEvent('player_connect_full', Dynamic_Wrap(TypingGame, 'OnPlayerConnect'), self)
+	ListenToGameEvent( "game_rules_state_change", Dynamic_Wrap( TypingGame, 'OnGameRulesStateChange' ), self )
 	
 	Convars:RegisterCommand("spawnfake",function(...) return spawnFakeUnits() end, "Spawns 10 enemy units", FCVAR_CHEAT) --you have to type it twice to make it work, this will do for now
 	
@@ -162,7 +203,7 @@ end
 -- Evaluate the state of the game
 function TypingGame:OnThink()
 	if GameRules:State_Get() == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
-		--print( "Template addon script is running." )
+		
 	elseif GameRules:State_Get() >= DOTA_GAMERULES_STATE_POST_GAME then
 		return nil
 	end

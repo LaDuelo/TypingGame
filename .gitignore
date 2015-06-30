@@ -44,3 +44,6 @@ Temporary Items
 game/tools_asset_info.bin
 tools_thumbnail_cache.bin
 *.bin
+game/scripts/vscripts/aa.txt
+game/scripts/vscripts/test2.lua
+game/tools_thumbnail_cache.bin
