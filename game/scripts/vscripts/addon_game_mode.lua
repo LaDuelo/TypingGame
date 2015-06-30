@@ -120,6 +120,7 @@ function TypingGame:SpawnUnit(playerId, creatureId, gold, useMath, answer)
 	end
 	entityOnMap[creature] = word
 	PlayerResource:SpendGold(playerId, gold, 0)
+	creepSpawn(gold, playerId)
 end
 
 function spawnFakeUnits()

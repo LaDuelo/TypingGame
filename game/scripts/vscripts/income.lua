@@ -2,7 +2,6 @@ income = {}
 INCOME_DEFAULT = 100 -- 100 for testing purposes
 function initIncome(playerID)
 	--initializes the income table for all connected players
-	print(playerID)
 	income[playerID] = INCOME_DEFAULT
 end
 
@@ -10,8 +9,7 @@ local function modifyIncome(playerID, add)
 	income[playerID] = income[playerID] + add
 end
 
-function creepKill(unitPrice, playerID)
-	--probably dont need this
+function creepSpawn(unitPrice, playerID)
 	--10% of creep cost added to income
 	local add = unitPrice / 10
 	modifyIncome(playerID, add)
@@ -35,6 +33,7 @@ function giveIncome()
 		if ply then
 			local hero = ply:GetAssignedHero()
 			if hero then
+				Say(ply, "My income is: "..income[i], false) --todo: create panorama notifications or a table showing income
 				hero:ModifyGold(income[i], true, 0)
 			end
 		end
